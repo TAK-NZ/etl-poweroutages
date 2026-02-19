@@ -104,9 +104,8 @@ jobs:
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
           docker buildx build \
-            --no-cache \
+            --load \
             --platform linux/amd64 \
-            --output type=docker \
             --provenance=false \
             -t etl .
           
@@ -181,9 +180,8 @@ jobs:
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
           docker buildx build \
-            --no-cache \
+            --load \
             --platform linux/amd64 \
-            --output type=docker \
             --provenance=false \
             -t etl .
           
