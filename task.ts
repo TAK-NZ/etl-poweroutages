@@ -19,6 +19,37 @@ const Env = Type.Object({
     }))
 });
 
+const PowerOutageSchema = Type.Object({
+    outageId: Type.String({ description: 'Unique outage identifier' }),
+    utility: Type.Object({
+        name: Type.String({ description: 'Utility company name' }),
+        id: Type.String({ description: 'Utility company ID' })
+    }),
+    region: Type.String({ description: 'NZ region name' }),
+    regionCode: Type.String({ description: 'ISO 3166-2:NZ region code' }),
+    outageStart: Type.String({ description: 'Outage start timestamp' }),
+    estimatedRestoration: Type.Optional(Type.String({ description: 'Estimated restoration time' })),
+    cause: Type.String({ description: 'Cause of outage' }),
+    status: Type.String({ description: 'Outage status (active, resolved)' }),
+    outageType: Type.Optional(Type.String({ description: 'Type of outage (planned, unplanned)' })),
+    customersAffected: Type.Number({ description: 'Number of customers affected' }),
+    crewStatus: Type.Optional(Type.String({ description: 'Crew status information' })),
+    location: Type.Object({
+        coordinates: Type.Object({
+            latitude: Type.Number({ description: 'Latitude' }),
+            longitude: Type.Number({ description: 'Longitude' })
+        }),
+        areas: Type.Array(Type.String(), { description: 'Affected areas' }),
+        streets: Type.Array(Type.String(), { description: 'Affected streets' })
+    }),
+    metadata: Type.Optional(Type.Object({
+        feeder: Type.Optional(Type.String({ description: 'Feeder name' })),
+        lastUpdate: Type.Optional(Type.String({ description: 'Last update timestamp' })),
+        aggregationType: Type.Optional(Type.String({ description: 'Aggregation type' })),
+        outageCount: Type.Optional(Type.Number({ description: 'Number of aggregated outages' }))
+    }))
+});
+
 interface PowerOutage {
     outageId: string;
     utility: {
@@ -82,22 +113,7 @@ export default class Task extends ETL {
             if (type === SchemaType.Input) {
                 return Env;
             } else {
-                return Type.Object({
-                    type: Type.Literal('Feature'),
-                    properties: Type.Object({
-                        callsign: Type.String({ description: 'Utility and location' }),
-                        type: Type.String({ description: 'CoT type' }),
-                        icon: Type.String({ description: 'Icon path' }),
-                        time: Type.String({ description: 'Event time' }),
-                        start: Type.String({ description: 'Outage start time' }),
-                        stale: Type.String({ description: 'Estimated restoration or expiry' }),
-                        remarks: Type.String({ description: 'Utility, customers affected, status, cause, region, areas, streets, times, crew status' })
-                    }),
-                    geometry: Type.Object({
-                        type: Type.Literal('Point'),
-                        coordinates: Type.Array(Type.Number(), { description: '[longitude, latitude]' })
-                    })
-                });
+                return PowerOutageSchema;
             }
         } else {
             return Type.Object({});
