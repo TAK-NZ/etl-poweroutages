@@ -79,8 +79,8 @@ This will ensure proper visual identification and documentation for the task in 
 
 Color code outages by customer impact using CloudTAK styling overrides:
 
-### Green (Minor) - 1-9 customers
-- **Color**: `#00FF00` or `rgb(0, 255, 0)`
+### White (Minor) - 1-9 customers
+- **Color**: `#FFFFFF` or `rgb(255, 255, 255)`
 - **JSONata**: `properties.metadata.customersAffected >= 1 and properties.metadata.customersAffected < 10`
 
 ### Yellow (Small) - 10-49 customers
