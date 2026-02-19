@@ -82,7 +82,22 @@ export default class Task extends ETL {
             if (type === SchemaType.Input) {
                 return Env;
             } else {
-                return Type.Object({});
+                return Type.Object({
+                    type: Type.Literal('Feature'),
+                    properties: Type.Object({
+                        callsign: Type.String(),
+                        type: Type.String(),
+                        icon: Type.String(),
+                        time: Type.String(),
+                        start: Type.String(),
+                        stale: Type.String(),
+                        remarks: Type.String()
+                    }),
+                    geometry: Type.Object({
+                        type: Type.Literal('Point'),
+                        coordinates: Type.Array(Type.Number())
+                    })
+                });
             }
         } else {
             return Type.Object({});
