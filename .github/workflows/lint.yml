@@ -40,4 +40,4 @@ jobs:
         run: npm test
         
       - name: Security audit
-        run: npm audit --production --audit-level=high
+        run: npm audit --production
