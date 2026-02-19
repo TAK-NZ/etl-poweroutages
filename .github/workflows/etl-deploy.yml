@@ -73,6 +73,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and Push ETL to Demo
         env:
           STACK_NAME: ${{ vars.DEMO_STACK_NAME || 'Demo' }}
@@ -100,8 +103,12 @@ jobs:
           
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
-          export DOCKER_BUILDKIT=1
-          docker build --platform linux/amd64 -t etl .
+          docker buildx build \
+            --no-cache \
+            --platform linux/amd64 \
+            --output type=docker \
+            --provenance=false \
+            -t etl .
           
           # Tag image with ETL name and tag
           IMAGE_TAG="${ETL_NAME}-${TAG}"
@@ -143,6 +150,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and Push ETL to Production
         env:
           STACK_NAME: ${{ vars.PROD_STACK_NAME || 'Prod' }}
@@ -170,8 +180,12 @@ jobs:
           
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
-          export DOCKER_BUILDKIT=1
-          docker build --platform linux/amd64 -t etl .
+          docker buildx build \
+            --no-cache \
+            --platform linux/amd64 \
+            --output type=docker \
+            --provenance=false \
+            -t etl .
           
           # Tag image with ETL name and tag
           IMAGE_TAG="${ETL_NAME}-${TAG}"
