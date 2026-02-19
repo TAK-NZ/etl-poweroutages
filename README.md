@@ -73,6 +73,30 @@ This will ensure proper visual identification and documentation for the task in 
 - **Utility Filter**: Filter by specific utility (e.g., ORION_NZ, POWERCO_NZ, WELLINGTON_NZ)
 - **Outage Type**: Filter by outage type (planned, unplanned)
 
+## Recommended Styling Overrides
+
+Color code outages by customer impact using CloudTAK styling overrides:
+
+### Green (Minor) - 1-9 customers
+- **Color**: `#00FF00` or `rgb(0, 255, 0)`
+- **JSONata**: `properties.metadata.customersAffected >= 1 and properties.metadata.customersAffected < 10`
+
+### Yellow (Small) - 10-49 customers
+- **Color**: `#FFFF00` or `rgb(255, 255, 0)`
+- **JSONata**: `properties.metadata.customersAffected >= 10 and properties.metadata.customersAffected < 50`
+
+### Orange (Medium) - 50-99 customers
+- **Color**: `#FFA500` or `rgb(255, 165, 0)`
+- **JSONata**: `properties.metadata.customersAffected >= 50 and properties.metadata.customersAffected < 100`
+
+### Red (Large) - 100-499 customers
+- **Color**: `#FF0000` or `rgb(255, 0, 0)`
+- **JSONata**: `properties.metadata.customersAffected >= 100 and properties.metadata.customersAffected < 500`
+
+### Purple (Major) - 500+ customers
+- **Color**: `#800080` or `rgb(128, 0, 128)`
+- **JSONata**: `properties.metadata.customersAffected >= 500`
+
 ## Development
 
 TAK.NZ provided Lambda ETLs are currently all written in [NodeJS](https://nodejs.org/en) through the use of a AWS Lambda optimized
