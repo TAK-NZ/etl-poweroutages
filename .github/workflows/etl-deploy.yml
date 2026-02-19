@@ -73,58 +73,28 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build and Push ETL to Demo
         env:
           STACK_NAME: ${{ vars.DEMO_STACK_NAME || 'Demo' }}
           TAG: ${{ steps.tag.outputs.tag }}
           ETL_NAME: ${{ vars.ETL_NAME || github.event.repository.name }}
         run: |
-          # Get ECR repository URI from CloudFormation exports
           ECR_EXPORT_NAME="TAK-${STACK_NAME}-BaseInfra-EcrEtlTasksRepoArn"
-          
           ECR_REPO_ARN=$(aws cloudformation list-exports \
               --query "Exports[?Name=='${ECR_EXPORT_NAME}'].Value" \
               --output text \
               --region "${{ secrets.AWS_REGION || secrets.DEMO_AWS_REGION }}")
-          
           if [[ -z "$ECR_REPO_ARN" || "$ECR_REPO_ARN" == "None" ]]; then
               echo "Error: ETL ECR repository not found. Ensure BaseInfra stack is deployed."
-              echo "Available exports:"
-              aws cloudformation list-exports --query "Exports[?contains(Name, 'ECR')].Name" --output table --region "${{ secrets.AWS_REGION || secrets.DEMO_AWS_REGION }}"
               exit 1
           fi
-          
-          # Extract repository name from ARN
           ECR_REPO_NAME=$(echo "$ECR_REPO_ARN" | cut -d'/' -f2)
           ECR_URI="${{ secrets.AWS_ACCOUNT_ID || secrets.DEMO_AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION || secrets.DEMO_AWS_REGION }}.amazonaws.com/${ECR_REPO_NAME}"
-          
-          # Build Docker image with Docker v2 manifest
-          echo "Building Docker image..."
-          docker buildx build \
-            --no-cache \
-            --platform linux/amd64 \
-            --output type=docker \
-            --provenance=false \
-            --sbom=false \
-            -t etl .
-          
-          # Tag image with ETL name and tag
+          docker build --platform linux/amd64 -t etl .
           IMAGE_TAG="${ETL_NAME}-${TAG}"
-          FULL_IMAGE_URI="${ECR_URI}:${IMAGE_TAG}"
-          
-          echo "Tagging image: $FULL_IMAGE_URI"
-          docker tag etl "$FULL_IMAGE_URI"
-          
-          echo "Pushing image to ECR..."
-          docker push "$FULL_IMAGE_URI"
-          
-          echo "✅ Successfully deployed ETL image: $FULL_IMAGE_URI"
-          echo ""
-          echo "To use this image in CloudTAK:"
-          echo "Update your ETL configuration to reference: $IMAGE_TAG"
+          docker tag etl "${ECR_URI}:${IMAGE_TAG}"
+          docker push "${ECR_URI}:${IMAGE_TAG}"
+          echo "✅ Successfully deployed ETL image: ${ECR_URI}:${IMAGE_TAG}"
 
   deploy-to-production:
     needs: build-and-validate
@@ -132,7 +102,6 @@ jobs:
     environment: production
     env:
       STACK_NAME: ${{ vars.PROD_STACK_NAME || 'Prod' }}
-    # Manual approval required for production deployment
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     steps:
       - uses: actions/checkout@v4
@@ -151,55 +120,25 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Build and Push ETL to Production
         env:
           STACK_NAME: ${{ vars.PROD_STACK_NAME || 'Prod' }}
           TAG: ${{ steps.tag.outputs.tag }}
           ETL_NAME: ${{ vars.ETL_NAME || github.event.repository.name }}
         run: |
-          # Get ECR repository URI from CloudFormation exports
           ECR_EXPORT_NAME="TAK-${STACK_NAME}-BaseInfra-EcrEtlTasksRepoArn"
-          
           ECR_REPO_ARN=$(aws cloudformation list-exports \
               --query "Exports[?Name=='${ECR_EXPORT_NAME}'].Value" \
               --output text \
               --region "${{ secrets.AWS_REGION || secrets.PROD_AWS_REGION }}")
-          
           if [[ -z "$ECR_REPO_ARN" || "$ECR_REPO_ARN" == "None" ]]; then
               echo "Error: ETL ECR repository not found. Ensure BaseInfra stack is deployed."
-              echo "Available exports:"
-              aws cloudformation list-exports --query "Exports[?contains(Name, 'ECR')].Name" --output table --region "${{ secrets.AWS_REGION || secrets.PROD_AWS_REGION }}"
               exit 1
           fi
-          
-          # Extract repository name from ARN
           ECR_REPO_NAME=$(echo "$ECR_REPO_ARN" | cut -d'/' -f2)
           ECR_URI="${{ secrets.AWS_ACCOUNT_ID || secrets.PROD_AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION || secrets.PROD_AWS_REGION }}.amazonaws.com/${ECR_REPO_NAME}"
-          
-          # Build Docker image with Docker v2 manifest
-          echo "Building Docker image..."
-          docker buildx build \
-            --no-cache \
-            --platform linux/amd64 \
-            --output type=docker \
-            --provenance=false \
-            --sbom=false \
-            -t etl .
-          
-          # Tag image with ETL name and tag
+          docker build --platform linux/amd64 -t etl .
           IMAGE_TAG="${ETL_NAME}-${TAG}"
-          FULL_IMAGE_URI="${ECR_URI}:${IMAGE_TAG}"
-          
-          echo "Tagging image: $FULL_IMAGE_URI"
-          docker tag etl "$FULL_IMAGE_URI"
-          
-          echo "Pushing image to ECR..."
-          docker push "$FULL_IMAGE_URI"
-          
-          echo "✅ Successfully deployed ETL image: $FULL_IMAGE_URI"
-          echo ""
-          echo "To use this image in CloudTAK:"
-          echo "Update your ETL configuration to reference: $IMAGE_TAG"
+          docker tag etl "${ECR_URI}:${IMAGE_TAG}"
+          docker push "${ECR_URI}:${IMAGE_TAG}"
+          echo "✅ Successfully deployed ETL image: ${ECR_URI}:${IMAGE_TAG}"
