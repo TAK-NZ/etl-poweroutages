@@ -85,17 +85,17 @@ export default class Task extends ETL {
                 return Type.Object({
                     type: Type.Literal('Feature'),
                     properties: Type.Object({
-                        callsign: Type.String(),
-                        type: Type.String(),
-                        icon: Type.String(),
-                        time: Type.String(),
-                        start: Type.String(),
-                        stale: Type.String(),
-                        remarks: Type.String()
+                        callsign: Type.String({ description: 'Utility and location' }),
+                        type: Type.String({ description: 'CoT type' }),
+                        icon: Type.String({ description: 'Icon path' }),
+                        time: Type.String({ description: 'Event time' }),
+                        start: Type.String({ description: 'Outage start time' }),
+                        stale: Type.String({ description: 'Estimated restoration or expiry' }),
+                        remarks: Type.String({ description: 'Utility, customers affected, status, cause, region, areas, streets, times, crew status' })
                     }),
                     geometry: Type.Object({
                         type: Type.Literal('Point'),
-                        coordinates: Type.Array(Type.Number())
+                        coordinates: Type.Array(Type.Number(), { description: '[longitude, latitude]' })
                     })
                 });
             }
