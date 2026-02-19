@@ -16,6 +16,8 @@ Power outages are displayed on the TAK map with the following information:
 - Crew status (when available)
 - Affected streets and areas
 
+![Power Outages on TAK Map](docs/etl-poweroutages.png)
+
 ## Deployment
 
 Deployment into the CloudTAK environment for ETL tasks is done via automatic releases to the TAK.NZ AWS environment.
