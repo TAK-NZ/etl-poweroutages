@@ -104,9 +104,11 @@ jobs:
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
           docker buildx build \
-            --load \
+            --no-cache \
             --platform linux/amd64 \
+            --output type=docker \
             --provenance=false \
+            --sbom=false \
             -t etl .
           
           # Tag image with ETL name and tag
@@ -180,9 +182,11 @@ jobs:
           # Build Docker image with Docker v2 manifest
           echo "Building Docker image..."
           docker buildx build \
-            --load \
+            --no-cache \
             --platform linux/amd64 \
+            --output type=docker \
             --provenance=false \
+            --sbom=false \
             -t etl .
           
           # Tag image with ETL name and tag
