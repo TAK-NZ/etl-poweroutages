@@ -189,6 +189,7 @@ export default class Task extends ETL {
                         stale: outage.estimatedRestoration 
                             ? new Date(outage.estimatedRestoration).toISOString()
                             : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                        metadata: outage,
                         remarks: remarks.join('\n')
                     },
                     geometry: {
