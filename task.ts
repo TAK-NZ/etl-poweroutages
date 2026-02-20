@@ -188,7 +188,7 @@ export default class Task extends ETL {
                         start: new Date(outage.outageStart).toISOString(),
                         stale: outage.estimatedRestoration 
                             ? new Date(outage.estimatedRestoration).toISOString()
-                            : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                            : new Date(Date.now() + 60 * 60 * 1000).toISOString(),
                         metadata: outage,
                         remarks: remarks.join('\n')
                     },
