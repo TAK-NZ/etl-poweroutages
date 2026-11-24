@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.1.1 - 2026-11-24
+### Changed
+- Update `@tak-ps/etl` to `^11.4.0`. CloudTAK v14 requires ETLs to be on ETL-Base v11 or higher. v11 publishes Output schemas as named schemas, so this task needed no change for that, and the release also works with CloudTAK v13
+- Update the other dependencies within their existing ranges, which clears the `npm audit --production` findings that the deploy workflow checks
 ## v1.1.0 - 2026-10-07
 ### Added
 - Add a `capabilities.json` manifest so CloudTAK can read the task's requirements from the image (TAK-NZ/CloudTAK#165). It declares a single required permission, `feature:submit` (the only CloudTAK API the task uses is `submit()`), 1024 MB memory / 120 s timeout, and a default `rate(5 minutes)` schedule. The schedule and memory/timeout values are estimates, not measured, and can be tuned per layer. It is validated against `StaticCapabilitiesSchema` from `@tak-ps/etl`, and a test guards it in CI
